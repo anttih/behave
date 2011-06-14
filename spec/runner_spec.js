@@ -1,50 +1,22 @@
+var Runner = require('behave').Runner;
 var vows = require('vows');
 var assert = require('assert');
-
-var Runner = function() {
-    this.events = {
-        failure: [],
-        error: []
-    };
-};
-Runner.prototype = {
-    run: function (suite) {
-        var test;
-        for (var name in suite) {
-            test = suite[name];
-            try {
-                test();
-            } catch (e) {
-                if (e.name === 'AssertionError') {
-                    this.fire('failure', '[TOP-LEVEL]', name, e);
-                } else {
-                    this.fire('error', '[TOP-LEVEL]', name, e);
-                }
-            }
-        }
-    },
-
-    fire: function (event, context, name, exception) {
-        var event, i;
-        var callbacks = this.events[event];
-        for (i = 0; i < callbacks.length; i++) {
-            event = callbacks[i];
-            event(context, name, exception);
-        }
-    },
-
-    on: function(event, callback) {
-        this.events[event].push(callback);
-    }
-};
 
 var run_suite = function (suite) {
     var runner = new Runner();
 
     var results = {
+        ok: [],
         errors: [],
         failures: []
     };
+
+    runner.on('ok', function (context, name) {
+        results.ok.push({
+            context: context,
+            name:    name
+        });
+    });
 
     runner.on('error', function (context, name, e) {
         results.errors.push({
@@ -80,6 +52,14 @@ vows.describe("Runner").addBatch({
         }
     },
 
+    'Suite with one passing test': {
+        topic: function () {
+            return run_suite({'test name' : function () {}});
+        },
+        'has one passing test': function (results) {
+            assert.equal(results.ok.length, 1);
+        }
+    },
     'Suite with a failure': {
         topic: function (runner) {
             return run_suite({'test name' : function () {
@@ -118,6 +98,6 @@ vows.describe("Runner").addBatch({
         'error is fired with exception': function (results) {
             assert.equal(results.errors[0].exception.name, 'Error');
         }
-    }
+    },
 
 }).export(module);
