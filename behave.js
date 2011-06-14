@@ -83,10 +83,16 @@ TestContext.prototype = {
 
 var SpecReporter = exports.SpecReporter = function (stream) {
     this.stream = stream;
+    this.written_context_names = [];
 };
 
 SpecReporter.prototype = {
     ok: function (context, name) {
-        this.stream.write(context.join('\n') + '\n- ' + name);
+        var context = context.join(' ');
+        if (! (context in this.written_context_names)) {
+            this.written_context_names[context] = true;
+            this.stream.write(context + '\n');
+        }
+        this.stream.write('- ' + name + '\n');
     }
 };
