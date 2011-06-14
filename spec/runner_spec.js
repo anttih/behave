@@ -100,4 +100,17 @@ vows.describe("Runner").addBatch({
         }
     },
 
+    'Suite with a context': {
+        topic: function () {
+            return run_suite({
+                'Context name': {
+                    'test name': function () {}
+                }
+            });
+        },
+
+        'runs test in context': function (results) {
+            assert.equal(results.ok.length, 1);
+        }
+    }
 }).export(module);
