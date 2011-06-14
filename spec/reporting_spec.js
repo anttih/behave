@@ -1,6 +1,7 @@
 var Reporter = require('behave').SpecReporter;
 var vows = require('vows');
 var assert = require('assert');
+var AssertionError = require('assert').AssertionError;
 
 function new_stream() {
     return {
@@ -36,4 +37,22 @@ vows.describe("Spec reporter").addBatch({
             assert.equal(stream.data, 'Topic name\n- test name\n');
         }
     },
+    'Failing test': {
+        'prints failure name and message': function () {
+            stream = new_stream();
+            var reporter = new Reporter(stream);
+
+            reporter.failure(['Topic'], 'test name', new AssertionError({message: 'Message'}));
+            assert.equal(stream.data, 'Topic\nFAIL: Message in test name\n');
+        }
+    },
+    'Erroring test': {
+        'prints error name and message': function () {
+            stream = new_stream();
+            var reporter = new Reporter(stream);
+
+            reporter.error(['Topic'], 'test name', new Error('Message'));
+            assert.equal(stream.data, 'Topic\nERROR: Message in test name\n');
+        }
+    }
 }).export(module);
