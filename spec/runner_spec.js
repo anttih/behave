@@ -70,7 +70,7 @@ vows.describe("Runner").addBatch({
             assert.equal(results.failures.length, 1);
         },
         'failure is fired with context': function (results) {
-            assert.equal(results.failures[0].context, '[TOP-LEVEL]');
+            assert.deepEqual(results.failures[0].context, ['[TOP-LEVEL]']);
         },
         'failure is fired with test name': function (results) {
             assert.equal(results.failures[0].name, 'test name');
@@ -90,7 +90,7 @@ vows.describe("Runner").addBatch({
             assert.equal(results.errors.length, 1);
         },
         'error is fired with context': function (results) {
-            assert.equal(results.errors[0].context, '[TOP-LEVEL]');
+            assert.deepEqual(results.errors[0].context, ['[TOP-LEVEL]']);
         },
         'error is fired with test name': function (results) {
             assert.equal(results.errors[0].name, 'test name');
@@ -111,6 +111,40 @@ vows.describe("Runner").addBatch({
 
         'runs test in context': function (results) {
             assert.equal(results.ok.length, 1);
+        },
+        'report ok with context and name': function (results) {
+            var info = results.ok[0];
+            assert.deepEqual(info.context, ['[TOP-LEVEL]', 'Context name']);
+            assert.equal(info.name, 'test name');
+        }
+    },
+    'Suite with a nested failure': {
+        topic: function () {
+            return run_suite({
+                'Failure context': {
+                    'failing test': function () {
+                        assert.ok(false);
+                    }
+                }
+            });
+        },
+
+        'report failure with context and name': function (results) {
+            var info = results.failures[0];
+            assert.deepEqual(info.context, ['[TOP-LEVEL]', 'Failure context']);
+            assert.equal(info.name, 'failing test');
+        }
+    },
+    'Suite with two contexts at the same level': {
+        topic: function () {
+            return run_suite({
+                'First context': { 'first test': function () {} },
+                'Second context': { 'second test': function () {} }
+            });
+        },
+        'reports ok with correct context names': function (results) {
+            assert.deepEqual(results.ok[0].context, ['[TOP-LEVEL]', 'First context']);
+            assert.deepEqual(results.ok[1].context, ['[TOP-LEVEL]', 'Second context']);
         }
     }
 }).export(module);

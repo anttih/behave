@@ -5,31 +5,38 @@ var Runner = exports.Runner = function() {
         failure: [],
         error: []
     };
+    this.top_level_context = '[TOP-LEVEL]';
 };
 
 Runner.prototype = {
     run: function (suite) {
-        var name, test;
+        this._run_context([this.top_level_context], suite);
+    },
+
+    _run_context: function (context, suite) {
+        var context_copy, name, test;
         for (name in suite) {
             test = suite[name];
             
             if (typeof test === 'object') {
-                this.run(test);
+                context_copy = context.slice(0);
+                context_copy.push(name);
+                this._run_context(context_copy, test);
             } else if (typeof test === 'function') {
-                this._run_test(name, test);
+                this._run_test(context, name, test);
             }
         }
     },
 
-    _run_test: function (name, test) {
+    _run_test: function (context, name, test) {
         try {
             test();
-            this.fire('ok', '[TOP-LEVEL]', name);
+            this.fire('ok', context, name);
         } catch (e) {
             if (e.name === 'AssertionError') {
-                this.fire('failure', '[TOP-LEVEL]', name, e);
+                this.fire('failure', context, name, e);
             } else {
-                this.fire('error', '[TOP-LEVEL]', name, e);
+                this.fire('error', context, name, e);
             }
         }
     },
