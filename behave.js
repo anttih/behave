@@ -80,3 +80,13 @@ TestContext.prototype = {
         test.apply(that);
     }
 };
+
+var SpecReporter = exports.SpecReporter = function (stream) {
+    this.stream = stream;
+};
+
+SpecReporter.prototype = {
+    ok: function (context, name) {
+        this.stream.write(context.join('\n') + '\n- ' + name);
+    }
+};
