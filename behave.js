@@ -32,11 +32,12 @@ Runner.prototype = {
     },
 
     _run_test: function (context, name, test, before_each) {
+        var that = {};
         try {
             if (before_each) {
                 before_each();
             }
-            test();
+            test.apply(that);
             this.fire('ok', context, name);
         } catch (e) {
             if (e.name === 'AssertionError') {

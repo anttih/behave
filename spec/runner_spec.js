@@ -194,5 +194,23 @@ vows.describe("Runner").addBatch({
         'runs hook only for the test in its level': function (value) {
             assert.equal(value, 1);
         }
+    },
+    'Nested tests': {
+        topic: function () {
+            var value = true;
+            run_suite({
+                'first': function () { this.value = true; },
+                'nested': {
+                    'second': function () {
+                        // vows needs some other return value than undefined
+                        value = this.value || 'undefined';
+                    }
+                }
+            });
+            return value;
+        },
+        "each run in a clean 'this' environment": function (value) {
+            assert.equal(value, 'undefined');
+        }
     }
 }).export(module);
