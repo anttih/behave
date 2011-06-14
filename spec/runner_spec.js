@@ -170,5 +170,29 @@ vows.describe("Runner").addBatch({
         'runs hook only once before the test': function (value) {
             assert.equal(value, 1);
         }
+    },
+    'Suite with before_each hook in two contexts at the same level': {
+        topic: function () {
+            var before_each_value = 0;
+            var before_each_value_inside_test;
+            this.results = run_suite({
+                'Context name': {
+                    before_each: function () {
+                        before_each_value += 1;
+                    },
+                    'test name': function () {
+                    }
+                },
+                'Second context': {
+                    'second test': function () {
+                        before_each_value_inside_test = before_each_value;
+                    }
+                }
+            });
+            return before_each_value_inside_test;
+        },
+        'runs hook only for the test in its level': function (value) {
+            assert.equal(value, 1);
+        }
     }
 }).export(module);
