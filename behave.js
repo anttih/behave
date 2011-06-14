@@ -14,7 +14,10 @@ Runner.prototype = {
     },
 
     _run_context: function (context, suite) {
-        var context_copy, name, test;
+        var before_each, context_copy, name, test;
+        if ('before_each' in suite) {
+            before_each = suite.before_each;
+        }
         for (name in suite) {
             test = suite[name];
             
@@ -22,14 +25,17 @@ Runner.prototype = {
                 context_copy = context.slice(0);
                 context_copy.push(name);
                 this._run_context(context_copy, test);
-            } else if (typeof test === 'function') {
-                this._run_test(context, name, test);
+            } else if (typeof test === 'function' && name !== 'before_each') {
+                this._run_test(context, name, test, before_each);
             }
         }
     },
 
-    _run_test: function (context, name, test) {
+    _run_test: function (context, name, test, before_each) {
         try {
+            if (before_each) {
+                before_each();
+            }
             test();
             this.fire('ok', context, name);
         } catch (e) {

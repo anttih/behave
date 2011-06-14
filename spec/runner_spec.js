@@ -146,5 +146,29 @@ vows.describe("Runner").addBatch({
             assert.deepEqual(results.ok[0].context, ['[TOP-LEVEL]', 'First context']);
             assert.deepEqual(results.ok[1].context, ['[TOP-LEVEL]', 'Second context']);
         }
+    },
+    'Suite with before_each hook and one test': {
+        topic: function () {
+            var before_each_value = 0;
+            var before_each_value_inside_test;
+            this.results = run_suite({
+                'Context name': {
+                    before_each: function () {
+                        before_each_value += 1;
+                    },
+                    'test name': function () {
+                        before_each_value_inside_test = before_each_value;
+                    }
+                }
+            });
+            return before_each_value_inside_test;
+        },
+        'does not run hook as a test': function () {
+            assert.equal(this.results.ok.length, 1);
+            assert.equal(this.results.ok[0].name, 'test name');
+        },
+        'runs hook only once before the test': function (value) {
+            assert.equal(value, 1);
+        }
     }
 }).export(module);
