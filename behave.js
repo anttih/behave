@@ -103,7 +103,7 @@ SpecReporter.prototype = {
         var context = context.join(' ');
         if (! (context in this.written_context_names)) {
             this.written_context_names[context] = true;
-            this.stream.write(context + '\n');
+            this.stream.write('\n' + context + '\n');
         }
     }
 };
