@@ -16,7 +16,7 @@ vows.describe("Behave command").addBatch({
             exec(CMD, {cwd: __dirname + '/data'}, this.callback);
         },
         "runs tests in spec/": function (err, stdout, stderr) {
-            assert.equal(stdout, '\n[TOP-LEVEL] Context\n- test name\n');
+            assert.equal(stdout, '\nContext\n- test name\n');
         }
     }
 }).export(module);

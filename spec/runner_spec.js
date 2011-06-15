@@ -2,7 +2,7 @@ var Runner = require('behave').Runner;
 var vows = require('vows');
 var assert = require('assert');
 
-var run_suite = function (suite) {
+var run_suite = function (suite, name) {
     var runner = new Runner();
 
     var results = {
@@ -34,7 +34,7 @@ var run_suite = function (suite) {
         });
     });
 
-    runner.run(suite);
+    runner.run(suite, name);
     return results;
 };
 
@@ -54,7 +54,7 @@ vows.describe("Runner").addBatch({
 
     'Suite with one passing test': {
         topic: function () {
-            return run_suite({'test name' : function () {}});
+            return run_suite({'context': {'test name' : function () {}}});
         },
         'has one passing test': function (results) {
             assert.equal(results.ok.length, 1);
@@ -62,15 +62,15 @@ vows.describe("Runner").addBatch({
     },
     'Suite with a failure': {
         topic: function (runner) {
-            return run_suite({'test name' : function () {
+            return run_suite({context: {'test name' : function () {
                 assert.ok(false);
-            }});
+            }}});
         },
         'has one failure': function (results) {
             assert.equal(results.failures.length, 1);
         },
         'failure is fired with context': function (results) {
-            assert.deepEqual(results.failures[0].context, ['[TOP-LEVEL]']);
+            assert.deepEqual(results.failures[0].context, ['context']);
         },
         'failure is fired with test name': function (results) {
             assert.equal(results.failures[0].name, 'test name');
@@ -82,15 +82,15 @@ vows.describe("Runner").addBatch({
 
     'Suite with an error': {
         topic: function () {
-            return run_suite({'test name': function () {
+            return run_suite({context: {'test name': function () {
                 throw new Error();
-            }});
+            }}});
         },
         'has one error': function (results) {
             assert.equal(results.errors.length, 1);
         },
         'error is fired with context': function (results) {
-            assert.deepEqual(results.errors[0].context, ['[TOP-LEVEL]']);
+            assert.deepEqual(results.errors[0].context, ['context']);
         },
         'error is fired with test name': function (results) {
             assert.equal(results.errors[0].name, 'test name');
@@ -114,7 +114,7 @@ vows.describe("Runner").addBatch({
         },
         'report ok with context and name': function (results) {
             var info = results.ok[0];
-            assert.deepEqual(info.context, ['[TOP-LEVEL]', 'Context name']);
+            assert.deepEqual(info.context, ['Context name']);
             assert.equal(info.name, 'test name');
         }
     },
@@ -131,7 +131,7 @@ vows.describe("Runner").addBatch({
 
         'report failure with context and name': function (results) {
             var info = results.failures[0];
-            assert.deepEqual(info.context, ['[TOP-LEVEL]', 'Failure context']);
+            assert.deepEqual(info.context, ['Failure context']);
             assert.equal(info.name, 'failing test');
         }
     },
@@ -143,8 +143,8 @@ vows.describe("Runner").addBatch({
             });
         },
         'reports ok with correct context names': function (results) {
-            assert.deepEqual(results.ok[0].context, ['[TOP-LEVEL]', 'First context']);
-            assert.deepEqual(results.ok[1].context, ['[TOP-LEVEL]', 'Second context']);
+            assert.deepEqual(results.ok[0].context, ['First context']);
+            assert.deepEqual(results.ok[1].context, ['Second context']);
         }
     },
     'Suite with before_each hook and one test': {

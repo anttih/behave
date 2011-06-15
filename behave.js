@@ -10,7 +10,7 @@ var Runner = exports.Runner = function() {
 
 Runner.prototype = {
     run: function (suite) {
-        var context = new TestContext([this.top_level_context]);
+        var context = new TestContext();
         this._run_context(context, suite);
     },
 
@@ -61,7 +61,7 @@ Runner.prototype = {
 
 var TestContext = function (stack) {
     // context name stack
-    this.stack = stack;
+    this.stack = stack || [];
     this.before_each = null;
 };
 
