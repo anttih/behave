@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+(function (global) {
+	var behave = require('behave');
+	var fs = require('fs');
+
+	var collector = new behave.SugarCollector();
+
+	var runner = new behave.Runner();
+	var reporter = new behave.SpecReporter(process.stdout);
+
+	runner.on('ok',      reporter.ok.bind(reporter));
+	runner.on('failure', reporter.failure.bind(reporter));
+	runner.on('error',   reporter.error.bind(reporter));
+
+	collector.suite(function (suite) {
+		runner.run(suite);
+	});
+
+	collector.start(global);
+
+	var files = fs.readdirSync(process.cwd() + '/spec');
+	files.forEach(function (file) {
+		if (/_spec.js$/.test(file)) {
+			var path = process.cwd() + '/spec/' + file;
+			require(path);
+		}
+	});
+
+	collector.stop();
+})(global);
+
