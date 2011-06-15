@@ -177,11 +177,8 @@ vows.describe("Runner").addBatch({
             var before_each_value_inside_test;
             this.results = run_suite({
                 'Context name': {
-                    before_each: function () {
-                        before_each_value += 1;
-                    },
-                    'test name': function () {
-                    }
+                    before_each: function () { before_each_value += 1; },
+                    'test name': function () {}
                 },
                 'Second context': {
                     'second test': function () {
@@ -193,6 +190,21 @@ vows.describe("Runner").addBatch({
         },
         'runs hook only for the test in its level': function (value) {
             assert.equal(value, 1);
+        }
+    },
+    'Suite with before_each hook accessing "this"': {
+        topic: function () {
+            var hello;
+            run_suite({
+                'Context name': {
+                    before_each: function () { this.hello = 'world'; },
+                    'test name': function () { hello = this.hello || 'FAIL'; }
+                },
+            });
+            return hello;
+        },
+        'runs before each hook in the same "this" context': function (hello) {
+            assert.equal(hello, 'world');
         }
     },
     'Nested tests': {

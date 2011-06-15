@@ -75,7 +75,7 @@ TestContext.prototype = {
     run_test: function (test) {
         var that = {};
         if (this.before_each) {
-            this.before_each();
+            this.before_each.apply(that);
         }
         test.apply(that);
     }
@@ -123,8 +123,13 @@ SugarCollector.prototype = {
             current_context[name] = f;
         };
 
+        var before_each = function (f) {
+            current_context.before_each = f;
+        };
+
         obj.describe = describe;
         obj.it = it;
+        obj.before_each = before_each;
     },
     stop: function () {
     }
