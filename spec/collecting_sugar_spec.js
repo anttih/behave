@@ -44,5 +44,48 @@ vows.describe("Collecting tests").addBatch({
             assert.ok('Empty suite' in suites[0]);
             assert.ok('test name' in suites[0]['Empty suite']);
         }
+    },
+    'with nested contexts': {
+        topic: function () {
+            var g = {};
+            return collect(g, function () {
+                g.describe("Empty suite", function () {
+                    g.describe('nested', function () {
+                        g.it('test name', function () {});
+                    });
+                });
+            });
+        },
+        'we find nested context with one test': function (suites) {
+            assert.equal(suites.length, 1);
+            assert.ok('Empty suite' in suites[0]);
+            assert.ok('nested' in suites[0]['Empty suite']);
+            assert.ok('test name' in suites[0]['Empty suite']['nested']);
+        }
+    },
+    'with nested contexts at the same level': {
+        topic: function () {
+            var g = {};
+            return collect(g, function () {
+                g.describe("Empty suite", function () {
+                    g.describe('nested 1', function () {
+                        g.it('test name', function () {});
+                    });
+                    g.describe('nested 2', function () {
+                        g.it('test name', function () {});
+                    });
+                });
+            });
+        },
+        'we find two nested contexts with one test in both': function (suites) {
+            assert.equal(suites.length, 1);
+            assert.ok('Empty suite' in suites[0]);
+
+            assert.ok('nested 1' in suites[0]['Empty suite']);
+            assert.ok('test name' in suites[0]['Empty suite']['nested 1']);
+
+            assert.ok('nested 2' in suites[0]['Empty suite']);
+            assert.ok('test name' in suites[0]['Empty suite']['nested 2']);
+        }
     }
 }).export(module);
