@@ -81,6 +81,39 @@ TestContext.prototype = {
     }
 };
 
+var SugarCollector = exports.SugarCollector = function () {
+    this.callback = null;
+};
+
+SugarCollector.prototype = {
+    suite: function (f) {
+        this.callback = f;
+    },
+    start: function (obj) {
+        var suite = {}; 
+        var current_context = suite;
+        var that = this;
+        var describe = function (context, block) {
+            var old_context = current_context;
+            var new_context = {};
+            current_context[context] = new_context;
+            current_context = new_context;
+
+            block();
+            that.callback(suite);
+        };
+
+        var it = function (name, f) {
+            current_context[name] = f;
+        };
+
+        obj.describe = describe;
+        obj.it = it;
+    },
+    stop: function () {
+    }
+};
+
 var SpecReporter = exports.SpecReporter = function (stream) {
     this.stream = stream;
     this.written_context_names = [];
