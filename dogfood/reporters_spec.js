@@ -78,5 +78,12 @@ describe('Reporters', function () {
             reporter.summary();
             assert.ok(/1 examples, 0 failures, 1 errors/.test(stream.data));
         });
+        it('has 3 examples, 1 failure, and 1 error when one of each', function () {
+            reporter.ok(['Topic'], 'test name');
+            reporter.failure(['Topic'], 'test name', new AssertionError({message: "msg"}));
+            reporter.error(['Topic'], 'test name', new Error("Moi"));
+            reporter.summary();
+            assert.ok(/3 examples, 1 failures, 1 errors/.test(stream.data));
+        });
     });
 });
