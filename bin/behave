@@ -19,10 +19,12 @@
 
 	collector.start(global);
 
-	var files = fs.readdirSync(process.cwd() + '/spec');
+	var dir = process.argv[2] || 'spec';
+
+	var files = fs.readdirSync(process.cwd() + '/' + dir);
 	files.forEach(function (file) {
 		if (/_spec.js$/.test(file)) {
-			var path = process.cwd() + '/spec/' + file;
+			var path = process.cwd() + '/' + dir + '/' + file;
 			require(path);
 		}
 	});
