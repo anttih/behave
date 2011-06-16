@@ -41,9 +41,6 @@ describe('Reporters', function () {
 
         describe('summary', function () {
             it('prints example counts', function () {
-                var stream = new_stream();
-                var reporter = new Reporter(stream);
-
                 reporter.ok(['Topic'], 'test name');
                 reporter.summary();
                 assert.equal(stream.data, '\nTopic\n- test name\n\n1 examples, 0 failures, 0 errors\n');
