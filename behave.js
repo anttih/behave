@@ -157,11 +157,15 @@ SpecReporter.prototype = {
     },
     failure: function (context, name, e) {
         this._write_context(context);
-        this.stream.write('FAIL: ' + e.message + ' in ' + name + '\n');
+        this.stream.write('- ' + name + '\n');
+        this.stream.write('  Failure: ' + e.message + '\n');
+        this.stream.write('    expected: ' + JSON.stringify(e.expected) + '\n');
+        this.stream.write('    got:      ' + JSON.stringify(e.actual) + '\n');
     },
     error: function (context, name, e) {
         this._write_context(context);
-        this.stream.write('ERROR: ' + e.message + ' in ' + name + '\n');
+        this.stream.write('- ' + name + '\n');
+        this.stream.write('  Error: ' + e.message + '\n');
     },
     summary: function () {
         this.stream.write('\n1 examples, 0 failures, 0 errors\n');

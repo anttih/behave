@@ -42,8 +42,16 @@ vows.describe("Spec reporter").addBatch({
             stream = new_stream();
             var reporter = new Reporter(stream);
 
-            reporter.failure(['Topic'], 'test name', new AssertionError({message: 'Message'}));
-            assert.equal(stream.data, '\nTopic\nFAIL: Message in test name\n');
+            reporter.failure(['Topic'], 'test name', new AssertionError({
+                message: 'Message',
+                expected: 'some',
+                actual: 'other'
+            }));
+
+            assert.equal(
+                stream.data,
+                '\nTopic\n- test name\n  Failure: Message\n    expected: "some"\n    got:      "other"\n'
+            );
         }
     },
     'Erroring test': {
@@ -52,7 +60,7 @@ vows.describe("Spec reporter").addBatch({
             var reporter = new Reporter(stream);
 
             reporter.error(['Topic'], 'test name', new Error('Message'));
-            assert.equal(stream.data, '\nTopic\nERROR: Message in test name\n');
+            assert.equal(stream.data, '\nTopic\n- test name\n  Error: Message\n');
         }
     }
 }).export(module);
