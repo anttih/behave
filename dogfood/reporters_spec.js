@@ -3,18 +3,14 @@ var assert = require('assert');
 var AssertionError = require('assert').AssertionError;
 
 describe('Reporters', function () {
-    function new_stream() {
-        return {
+    var stream, reporter;
+    before_each(function () {
+        stream = {
             data: '',
             write: function (data) {
                 this.data += data;
             }
         };
-    }
-
-    var stream, reporter;
-    before_each(function () {
-        stream = new_stream();
         reporter = new Reporter(stream);
     });
 
@@ -33,16 +29,6 @@ describe('Reporters', function () {
             assert.equal(stream.data, '\nTopic name\n  test name\n');
         });
 
-        describe('summary', function () {
-            it('prints example counts', function () {
-                reporter.ok(['Topic'], 'test name');
-                reporter.summary();
-                assert.equal(
-                    stream.data,
-                    '\nTopic\n  test name\n\n1 examples, 0 failures, 0 errors\n'
-                );
-            });
-        });
     });
 
     describe('Failing test', function () {
@@ -64,6 +50,27 @@ describe('Reporters', function () {
         it('prints error name and message', function () {
             reporter.error(['Topic'], 'test name', new Error('Message'));
             assert.equal(stream.data, '\nTopic\n  test name\n  Error: Message\n');
+        });
+    });
+
+    describe('summary', function () {
+        it('prints 1 example, 0 failures and 0 errors when one passing test', function () {
+            reporter.ok(['Topic'], 'test name');
+            reporter.summary();
+            assert.ok(/1 examples, 0 failures, 0 errors/.test(stream.data));
+        });
+
+        it('prints 2 examples, 0 failures and 0 errors when two passing tests', function () {
+            reporter.ok(['Topic'], 'test name');
+            reporter.ok(['Topic'], 'test name');
+            reporter.summary();
+            assert.ok(/2 examples, 0 failures, 0 errors/.test(stream.data));
+        });
+
+        it('prints 1 examples, 1 failures and 0 errors when one failure', function () {
+            reporter.failure(['Topic'], 'test name', new AssertionError({message: "msg"}));
+            reporter.summary();
+            assert.ok(/1 examples, 1 failures, 0 errors/.test(stream.data));
         });
     });
 });
