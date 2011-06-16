@@ -26,10 +26,14 @@ Runner.prototype = {
             
             if (typeof test === 'object') {
                 this._run_context(context.push(name), test);
-            } else if (typeof test === 'function' && name !== 'before_each') {
+            } else if (this._is_test(test, name)) {
                 this._run_test(context, name, test);
             }
         }
+    },
+
+    _is_test: function (f, name) {
+        return typeof f === 'function' && name !== 'before_each';
     },
 
     _run_test: function (context, name, test) {
