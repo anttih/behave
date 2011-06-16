@@ -148,18 +148,17 @@ SugarCollector.prototype = {
 var SpecReporter = exports.SpecReporter = function (stream) {
     this.stream = stream;
     this.written_context_names = [];
-    this.total = 0;
+    this.ok_count = 0;
     this.failure_count = 0;
 };
 
 SpecReporter.prototype = {
     ok: function (context, name) {
-        this.total++;
+        this.ok_count++;
         this._write_context(context);
         this._write_test_name(name);
     },
     failure: function (context, name, e) {
-        this.total++;
         this.failure_count++;
 
         this._write_context(context);
@@ -174,7 +173,8 @@ SpecReporter.prototype = {
         this.stream.write('  Error: ' + e.message + '\n');
     },
     summary: function () {
-        this.stream.write('\n' + this.total + ' examples, '
+        var total = this.ok_count + this.failure_count;
+        this.stream.write('\n' + total + ' examples, '
                           + this.failure_count + ' failures, 0 errors\n');
     },
 
