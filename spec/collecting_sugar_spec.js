@@ -45,6 +45,27 @@ vows.describe("Collecting tests").addBatch({
             assert.ok('test name' in suites[0]['Empty suite']);
         }
     },
+    'with contexts': {
+        topic: function () {
+            var g = {};
+            return collect(g, function () {
+                g.describe('first', function () {
+                    g.it('test name', function () {});
+                });
+                g.describe('second', function () {
+                    g.it('test name', function () {});
+                });
+            });
+        },
+        'we find two suites': function (suites) {
+            assert.equal(suites.length, 2);
+            assert.ok('first' in suites[0]);
+            assert.ok(! ('second' in suites[0]));
+
+            assert.ok('test name' in suites[0]['first']);
+            assert.ok('test name' in suites[1]['second']);
+        }
+    },
     'with nested contexts': {
         topic: function () {
             var g = {};

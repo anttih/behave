@@ -91,40 +91,42 @@ SugarCollector.prototype = {
     },
     start: function (obj) {
         var suite = {},
-            depth = 0,
-            current_context = suite,
             that = this
             stack = [];
 
-        var describe = function (context, block) {
-            var old_context = current_context,
-                new_context = {};
+        var get_current_context = function () {
+            var i, obj = suite;
+            for (i = 0; i < stack.length; i++) {
+                obj = obj[stack[i]];
+            }
+            return obj;
+        };
+
+        var describe = function (name, block) {
+            var context = get_current_context();
+
+            stack.push(name);
 
             // create a new context in the suite
-            current_context[context] = new_context;
-
-            // remember how deep the current context is
-            depth++;
-
-            current_context = new_context;
+            context[name] = {};
 
             // collect child-contexts
             block();
 
-            current_context = old_context;
-            depth--;
+            stack.pop();
 
-            if (depth === 0) {
+            if (stack.length === 0) {
                 that.callback(suite);
+                suite = {};
             }
         };
 
         var it = function (name, f) {
-            current_context[name] = f;
+            get_current_context()[name] = f;
         };
 
         var before_each = function (f) {
-            current_context.before_each = f;
+            get_current_context().before_each = f;
         };
 
         obj.describe = describe;
