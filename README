@@ -1,0 +1,13 @@
+Behave.js - synchronous unit-testing for JavaScript
+===================================================
+
+Goals:
+- Don't try to run tests asynchronously. Unit-tests don't need to run
+  asynchronously.
+- Make it really easy to create test files and suites
+- Target node and the browser
+- Have jMock-style mocking built-in
+- Have tools for stubbing callbacks
+- Be as much RSpec-like as possible
+
+Make it easy to test asynchronous JavaScript synchronously!
