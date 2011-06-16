@@ -150,6 +150,7 @@ var SpecReporter = exports.SpecReporter = function (stream) {
     this.written_context_names = [];
     this.ok_count = 0;
     this.failure_count = 0;
+    this.error_count = 0;
 };
 
 SpecReporter.prototype = {
@@ -168,14 +169,17 @@ SpecReporter.prototype = {
         this.stream.write('    got:      ' + JSON.stringify(e.actual) + '\n');
     },
     error: function (context, name, e) {
+        this.error_count++;
+
         this._write_context(context);
         this._write_test_name(name);
         this.stream.write('  Error: ' + e.message + '\n');
     },
     summary: function () {
-        var total = this.ok_count + this.failure_count;
+        var total = this.ok_count + this.failure_count + this.error_count;
         this.stream.write('\n' + total + ' examples, '
-                          + this.failure_count + ' failures, 0 errors\n');
+                          + this.failure_count + ' failures, '
+                          + this.error_count + ' errors\n');
     },
 
     _write_test_name: function (name) {

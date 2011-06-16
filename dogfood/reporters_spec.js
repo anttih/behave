@@ -54,23 +54,29 @@ describe('Reporters', function () {
     });
 
     describe('summary', function () {
-        it('prints 1 example, 0 failures and 0 errors when one passing test', function () {
+        it('has 1 example, 0 failures and 0 errors when one passing test', function () {
             reporter.ok(['Topic'], 'test name');
             reporter.summary();
             assert.ok(/1 examples, 0 failures, 0 errors/.test(stream.data));
         });
 
-        it('prints 2 examples, 0 failures and 0 errors when two passing tests', function () {
+        it('has 2 examples, 0 failures and 0 errors when two passing tests', function () {
             reporter.ok(['Topic'], 'test name');
             reporter.ok(['Topic'], 'test name');
             reporter.summary();
             assert.ok(/2 examples, 0 failures, 0 errors/.test(stream.data));
         });
 
-        it('prints 1 examples, 1 failures and 0 errors when one failure', function () {
+        it('has 1 examples, 1 failures and 0 errors when one failure', function () {
             reporter.failure(['Topic'], 'test name', new AssertionError({message: "msg"}));
             reporter.summary();
             assert.ok(/1 examples, 1 failures, 0 errors/.test(stream.data));
+        });
+
+        it('has 1 example, 0 failures and 1 error when one error', function () {
+            reporter.error(['Topic'], 'test name', new Error("Moi"));
+            reporter.summary();
+            assert.ok(/1 examples, 0 failures, 1 errors/.test(stream.data));
         });
     });
 });
