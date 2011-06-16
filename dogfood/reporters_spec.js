@@ -2,16 +2,16 @@ var Reporter = require('behave').SpecReporter;
 var assert = require('assert');
 var AssertionError = require('assert').AssertionError;
 
-function new_stream() {
-    return {
-        data: '',
-        write: function (data) {
-            this.data += data;
-        }
-    };
-}
-
 describe('Reporters', function () {
+    function new_stream() {
+        return {
+            data: '',
+            write: function (data) {
+                this.data += data;
+            }
+        };
+    }
+
     describe('Passing tests', function () {
         var stream, reporter;
         before_each(function () {
@@ -37,6 +37,17 @@ describe('Reporters', function () {
 
             reporter.ok(['Topic', 'name'], 'test name');
             assert.equal(stream.data, '\nTopic name\n- test name\n');
+        });
+
+        describe('summary', function () {
+            it('prints example counts', function () {
+                var stream = new_stream();
+                var reporter = new Reporter(stream);
+
+                reporter.ok(['Topic'], 'test name');
+                reporter.summary();
+                assert.equal(stream.data, '\nTopic\n- test name\n\n1 examples, 0 failures, 0 errors\n');
+            });
         });
     });
 

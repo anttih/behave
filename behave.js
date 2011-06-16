@@ -155,6 +155,9 @@ SpecReporter.prototype = {
         this._write_context(context);
         this.stream.write('ERROR: ' + e.message + ' in ' + name + '\n');
     },
+    summary: function () {
+        this.stream.write('\n1 examples, 0 failures, 0 errors\n');
+    },
     _write_context: function (context) {
         var context = context.join(' ');
         if (! (context in this.written_context_names)) {

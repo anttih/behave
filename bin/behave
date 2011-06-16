@@ -28,6 +28,7 @@
 			require(path);
 		}
 	});
+	reporter.summary();
 
 	collector.stop();
 })(global);
