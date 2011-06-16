@@ -2,57 +2,53 @@ var Collector = require('behave').SugarCollector;
 var vows = require('vows');
 var assert = require('assert');
 
-describe("Collecting tests", function () {
-    function collect(c, f) {
-        var collector = new Collector();
-        var suites = [];
+var collect = function (c, f) {
+    var collector = new Collector();
+    var suites = [];
 
-        collector.suite(function (suite) {
-            suites.push(suite);
-        });
-
-        collector.start(c);
-        f();
-        collector.stop();
-
-        return suites;
-    }
-
-    var suites;
-    describe('with one empty context', function () {
-        before_each(function () {
-            var g = {};
-            suites = collect(g, function () {
-                g.describe("Empty suite", function () {});
-            });
-        });
-
-        it('we find one empty context with name', function () {
-            assert.equal(suites.length, 1);
-            assert.deepEqual(suites[0], {'Empty suite':{}});
-        });
+    collector.suite(function (suite) {
+        suites.push(suite);
     });
 
-    describe('with one context with one test', function () {
-        before_each(function () {
+    collector.start(c);
+    f();
+    collector.stop();
+
+    return suites;
+};
+
+vows.describe("Collecting tests").addBatch({
+    'with one empty context': {
+        topic: function () {
             var g = {};
-            suites = collect(g, function () {
+            return collect(g, function () {
+                g.describe("Empty suite", function () {});
+            });
+        },
+        'we find one empty context with name': function (suites) {
+            assert.equal(suites.length, 1);
+            assert.deepEqual(suites[0], {'Empty suite':{}});
+        }
+    },
+    'with one context with one test': {
+        topic: function () {
+            var g = {};
+            return collect(g, function () {
                 g.describe("Empty suite", function () {
                     g.it('test name', function () {});
                 });
             });
-        });
-
-        it('we find one context with one test', function () {
+        },
+        'we find one context with one test': function (suites) {
             assert.equal(suites.length, 1);
             assert.ok('Empty suite' in suites[0]);
             assert.ok('test name' in suites[0]['Empty suite']);
-        });
-    });
-    describe('with contexts', function () {
-        before_each(function () {
+        }
+    },
+    'with contexts': {
+        topic: function () {
             var g = {};
-            suites = collect(g, function () {
+            return collect(g, function () {
                 g.describe('first', function () {
                     g.it('test name', function () {});
                 });
@@ -60,42 +56,38 @@ describe("Collecting tests", function () {
                     g.it('test name', function () {});
                 });
             });
-        });
-
-        it('we find two suites', function () {
+        },
+        'we find two suites': function (suites) {
             assert.equal(suites.length, 2);
             assert.ok('first' in suites[0]);
             assert.ok(! ('second' in suites[0]));
 
             assert.ok('test name' in suites[0]['first']);
             assert.ok('test name' in suites[1]['second']);
-        });
-    });
-
-    describe('with nested contexts', function () {
-        before_each(function () {
+        }
+    },
+    'with nested contexts': {
+        topic: function () {
             var g = {};
-            suites = collect(g, function () {
+            return collect(g, function () {
                 g.describe("Empty suite", function () {
                     g.describe('nested', function () {
                         g.it('test name', function () {});
                     });
                 });
             });
-        });
-
-        it('we find nested context with one test', function () {
+        },
+        'we find nested context with one test': function (suites) {
             assert.equal(suites.length, 1);
             assert.ok('Empty suite' in suites[0]);
             assert.ok('nested' in suites[0]['Empty suite']);
             assert.ok('test name' in suites[0]['Empty suite']['nested']);
-        });
-    });
-
-    describe('with nested contexts at the same level', function () {
-        before_each(function () {
+        }
+    },
+    'with nested contexts at the same level': {
+        topic: function () {
             var g = {};
-            suites = collect(g, function () {
+            return collect(g, function () {
                 g.describe("Empty suite", function () {
                     g.describe('nested 1', function () {
                         g.it('test name', function () {});
@@ -105,9 +97,8 @@ describe("Collecting tests", function () {
                     });
                 });
             });
-        });
-
-        it('we find two nested contexts with one test in both', function () {
+        },
+        'we find two nested contexts with one test in both': function (suites) {
             assert.equal(suites.length, 1);
             assert.ok('Empty suite' in suites[0]);
 
@@ -116,6 +107,6 @@ describe("Collecting tests", function () {
 
             assert.ok('nested 2' in suites[0]['Empty suite']);
             assert.ok('test name' in suites[0]['Empty suite']['nested 2']);
-        });
-    })
-});
+        }
+    }
+}).export(module);
