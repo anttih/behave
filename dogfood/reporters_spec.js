@@ -21,16 +21,16 @@ describe('Reporters', function () {
     describe('Passing tests', function () {
         it('prints context as topic', function () {
             reporter.ok(['Topic'], 'test name');
-            assert.equal(stream.data, '\nTopic\n- test name\n');
+            assert.equal(stream.data, '\nTopic\n  test name\n');
         });
         it('prints context name only once for all the tests in that context', function () {
             reporter.ok(['Topic'], 'test name');
             reporter.ok(['Topic'], 'second test');
-            assert.equal(stream.data, '\nTopic\n- test name\n- second test\n');
+            assert.equal(stream.data, '\nTopic\n  test name\n  second test\n');
         });
         it('concatenates nested context names as one', function () {
             reporter.ok(['Topic', 'name'], 'test name');
-            assert.equal(stream.data, '\nTopic name\n- test name\n');
+            assert.equal(stream.data, '\nTopic name\n  test name\n');
         });
 
         describe('summary', function () {
@@ -39,7 +39,7 @@ describe('Reporters', function () {
                 reporter.summary();
                 assert.equal(
                     stream.data,
-                    '\nTopic\n- test name\n\n1 examples, 0 failures, 0 errors\n'
+                    '\nTopic\n  test name\n\n1 examples, 0 failures, 0 errors\n'
                 );
             });
         });
@@ -55,7 +55,7 @@ describe('Reporters', function () {
 
             assert.equal(
                 stream.data,
-                '\nTopic\n- test name\n  Failure: Message\n    expected: "some"\n    got:      "other"\n'
+                '\nTopic\n  test name\n  Failure: Message\n    expected: "some"\n    got:      "other"\n'
             );
         });
     });
@@ -63,7 +63,7 @@ describe('Reporters', function () {
     describe('Erroring test', function () {
         it('prints error name and message', function () {
             reporter.error(['Topic'], 'test name', new Error('Message'));
-            assert.equal(stream.data, '\nTopic\n- test name\n  Error: Message\n');
+            assert.equal(stream.data, '\nTopic\n  test name\n  Error: Message\n');
         });
     });
 });

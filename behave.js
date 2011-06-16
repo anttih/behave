@@ -153,23 +153,28 @@ var SpecReporter = exports.SpecReporter = function (stream) {
 SpecReporter.prototype = {
     ok: function (context, name) {
         this._write_context(context);
-        this.stream.write('- ' + name + '\n');
+        this._write_test_name(name);
     },
     failure: function (context, name, e) {
         this._write_context(context);
-        this.stream.write('- ' + name + '\n');
+        this._write_test_name(name);
         this.stream.write('  Failure: ' + e.message + '\n');
         this.stream.write('    expected: ' + JSON.stringify(e.expected) + '\n');
         this.stream.write('    got:      ' + JSON.stringify(e.actual) + '\n');
     },
     error: function (context, name, e) {
         this._write_context(context);
-        this.stream.write('- ' + name + '\n');
+        this._write_test_name(name);
         this.stream.write('  Error: ' + e.message + '\n');
     },
     summary: function () {
         this.stream.write('\n1 examples, 0 failures, 0 errors\n');
     },
+
+    _write_test_name: function (name) {
+        this.stream.write('  ' + name + '\n');
+    },
+
     _write_context: function (context) {
         var context = context.join(' ');
         if (! (context in this.written_context_names)) {
