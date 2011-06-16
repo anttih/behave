@@ -224,5 +224,23 @@ vows.describe("Runner").addBatch({
         "each run in a clean 'this' environment": function (value) {
             assert.equal(value, 'undefined');
         }
+    },
+    'Suite with nested before_each hooks' : {
+        topic: function () {
+            var hook;
+            run_suite({
+                'context': {
+                    before_each: function () { this.hook = 'first'; },
+                    'nested context' : {
+                        before_each: function () { this.hook = this.hook + ' second'; },
+                        'test name': function () { hook = this.hook; }
+                    }
+                },
+            });
+            return hook;
+        },
+        'runs each before_each hook once in correct order': function (hook) {
+            assert.equal(hook, 'first second');
+        }
     }
 }).export(module);

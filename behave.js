@@ -18,7 +18,7 @@ Runner.prototype = {
         var name, test;
 
         if ('before_each' in suite) {
-            context.before_each = suite.before_each;
+            context.push_before_each(suite.before_each);
         }
 
         for (name in suite) {
@@ -59,23 +59,27 @@ Runner.prototype = {
     }
 };
 
-var TestContext = function (stack) {
+var TestContext = function (stack, before_each) {
     // context name stack
     this.stack = stack || [];
-    this.before_each = null;
+    this.before_each = before_each || [];
 };
 
 TestContext.prototype = {
     push: function (name) {
         var copy = this.stack.slice(0);
         copy.push(name);
-        return new TestContext(copy);
+        return new TestContext(copy, this.before_each.slice(0));
+    },
+
+    push_before_each: function (hook) {
+        this.before_each.push(hook);
     },
 
     run_test: function (test) {
-        var that = {};
-        if (this.before_each) {
-            this.before_each.apply(that);
+        var i, that = {};
+        for (i = 0; i < this.before_each.length; i++) {
+            this.before_each[i].apply(that);
         }
         test.apply(that);
     }
