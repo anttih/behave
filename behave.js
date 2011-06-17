@@ -150,7 +150,8 @@ var SpecReporter = exports.SpecReporter = function (stream, opts) {
     opts = opts || {};
 
     if (opts.color) {
-        this._write_ok_line = this._write_green_line;
+        this._write_ok_line    = this._write_green_line;
+        this._write_error_line = this._write_red_line;
     }
 
     this.written_context_names = [];
@@ -189,9 +190,16 @@ SpecReporter.prototype = {
     summary: function () {
         var total = this.ok_count + this.failure_count + this.error_count;
         this.stream.write('\n');
-        this._write_ok_line(0, total + ' examples, '
-                          + this.failure_count + ' failures, '
-                          + this.error_count + ' errors');
+
+        var summary = total + ' examples, '
+                    + this.failure_count + ' failures, '
+                    + this.error_count + ' errors';
+
+        if (this.ok_count !== total) {
+            this._write_error_line(0, summary);
+        } else {
+            this._write_ok_line(0, summary);
+        }
     },
 
     _write_test_name: function (level, name) {
@@ -230,7 +238,15 @@ SpecReporter.prototype = {
         this._write_indented_line(level, '\033[32;m' + str + '\033[0;m');
     },
 
+    _write_red_line: function (level, str) {
+        this._write_indented_line(level, '\033[31;m' + str + '\033[0;m');
+    },
+
     _write_ok_line: function (level, str) {
+        this._write_indented_line(level, str);
+    },
+
+    _write_error_line: function (level, str) {
         this._write_indented_line(level, str);
     },
 

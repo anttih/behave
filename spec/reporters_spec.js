@@ -127,6 +127,12 @@ describe('Reporters', function () {
             assert.ok(/\033\[32;m1 examples, 0 failures, 0 errors\033\[0;m/.test(stream.data));
         });
 
+        it('print summary with red when not all pass', function () {
+            reporter.failure(['Topic'], 'name', new AssertionError({message: "Msg"}));
+            reporter.summary();
+            assert.ok(/\033\[31;m1 xamples, 1 failures, 0 errors\033\[0;m/.test(stream.data));
+        });
+
         it('prints passing tests with green', function () {
             reporter.ok(['Topic'], 'passing test');
             assert.equal('\nTopic\n  \033[32;mpassing test\033[0;m\n', stream.data);
