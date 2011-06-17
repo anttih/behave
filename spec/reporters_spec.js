@@ -130,7 +130,7 @@ describe('Reporters', function () {
         it('print summary with red when not all pass', function () {
             reporter.failure(['Topic'], 'name', new AssertionError({message: "Msg"}));
             reporter.summary();
-            assert.ok(/\033\[31;m1 xamples, 1 failures, 0 errors\033\[0;m/.test(stream.data));
+            assert.ok(/\033\[31;m1 examples, 1 failures, 0 errors\033\[0;m/.test(stream.data));
         });
 
         it('prints passing tests with green', function () {
