@@ -7,7 +7,7 @@
 	var collector = new behave.SugarCollector();
 
 	var runner = new behave.Runner();
-	var reporter = new behave.SpecReporter(process.stdout);
+	var reporter = new behave.SpecReporter(process.stdout, {color: true});
 
 	runner.on('ok',      reporter.ok.bind(reporter));
 	runner.on('failure', reporter.failure.bind(reporter));
