@@ -24,9 +24,9 @@ describe('Reporters', function () {
             reporter.ok(['Topic'], 'second test');
             assert.equal(stream.data, '\nTopic\n  test name\n  second test\n');
         });
-        it('concatenates nested context names as one', function () {
+        it('indents nested context names', function () {
             reporter.ok(['Topic', 'name'], 'test name');
-            assert.equal(stream.data, '\nTopic name\n  test name\n');
+            assert.equal(stream.data, '\nTopic\n  name\n    test name\n');
         });
 
     });
@@ -41,7 +41,7 @@ describe('Reporters', function () {
 
             assert.equal(
                 stream.data,
-                '\nTopic\n  test name\n  Failure: Message\n    expected: "some"\n    got:      "other"\n'
+                '\nTopic\n  test name\n    Failure: Message\n      expected: "some"\n      got:      "other"\n'
             );
         });
     });
@@ -49,7 +49,7 @@ describe('Reporters', function () {
     describe('Erroring test', function () {
         it('prints error name and message', function () {
             reporter.error(['Topic'], 'test name', new Error('Message'));
-            assert.equal(stream.data, '\nTopic\n  test name\n  Error: Message\n');
+            assert.equal(stream.data, '\nTopic\n  test name\n    Error: Message\n');
         });
     });
 

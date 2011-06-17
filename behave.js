@@ -157,23 +157,25 @@ SpecReporter.prototype = {
     ok: function (context, name) {
         this.ok_count++;
         this._write_context(context);
-        this._write_test_name(name);
+        this._write_test_name(context.length, name);
     },
     failure: function (context, name, e) {
+        var level = context.length;
         this.failure_count++;
 
         this._write_context(context);
-        this._write_test_name(name);
-        this.stream.write('  Failure: ' + e.message + '\n');
-        this.stream.write('    expected: ' + JSON.stringify(e.expected) + '\n');
-        this.stream.write('    got:      ' + JSON.stringify(e.actual) + '\n');
+        this._write_test_name(level, name);
+        this._write_indented_line(level, '  Failure: ' + e.message);
+        this._write_indented_line(level, '    expected: ' + JSON.stringify(e.expected));
+        this._write_indented_line(level, '    got:      ' + JSON.stringify(e.actual));
     },
     error: function (context, name, e) {
+        var level = context.length;
         this.error_count++;
 
         this._write_context(context);
-        this._write_test_name(name);
-        this.stream.write('  Error: ' + e.message + '\n');
+        this._write_test_name(level, name);
+        this._write_indented_line(level, '  Error: ' + e.message);
     },
     summary: function () {
         var total = this.ok_count + this.failure_count + this.error_count;
@@ -182,15 +184,41 @@ SpecReporter.prototype = {
                           + this.error_count + ' errors\n');
     },
 
-    _write_test_name: function (name) {
-        this.stream.write('  ' + name + '\n');
+    _write_test_name: function (level, name) {
+        this._write_indented_line(level, name);
     },
 
     _write_context: function (context) {
-        var context = context.join(' ');
-        if (! (context in this.written_context_names)) {
-            this.written_context_names[context] = true;
-            this.stream.write('\n' + context + '\n');
+        var i, new_contexts = [];
+        for (i = 0; i < context.length; i++) {
+            if (this.written_context_names[i] !== context[i]) {
+                new_contexts = context.slice(i);
+                break;
+            }
         }
+
+        this._write_context_names(i, new_contexts);
+        this.written_context_names = context;
+    },
+
+    _write_indented_line: function (level, str) {
+        this.stream.write(this._indent(level) + str + '\n');
+    },
+    _write_context_names: function (level, names) {
+        var that = this;
+        if (level === 0) {
+            this.stream.write('\n');
+        }
+        names.forEach(function (name) {
+            that._write_indented_line(level, name);
+            level++;
+        });
+    },
+    _indent: function (level) {
+        var space = '';
+        while (level--) {
+            space += '  ';
+        }
+        return space;
     }
 };
