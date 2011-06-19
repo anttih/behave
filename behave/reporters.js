@@ -86,7 +86,7 @@ SpecReporter.prototype = {
     },
 
     _write_test_name: function (level, name) {
-        this.writer.write_line(level, colorize(name, {color: this.color, fg: 'green'}));
+        this._write_ok_line(level, name);
     },
 
     _write_context: function (context) {
@@ -112,6 +112,13 @@ SpecReporter.prototype = {
             level++;
         });
     },
+
+    _write_ok_line: function (level, str) {
+        this.writer.write_line(
+            level,
+            colorize(str, {color: this.color, fg: 'green'})
+        );
+    }
 
 };
 
