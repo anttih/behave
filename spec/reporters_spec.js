@@ -139,4 +139,63 @@ describe('Reporters', function () {
             assert.equal('\nTopic\n  \033[32;mpassing test\033[0;m\n', stream.data);
         });
     });
+
+    describe('line writer', function () {
+        describe('with no colors', function () {
+            var stream, writer;
+            before_each(function () {
+                stream = {
+                    data: '',
+                    write: function (data) {
+                        this.data += data;
+                    }
+                };
+                writer = new IndentingLineWriter(stream);
+            });
+
+            it('can write lines', function () {
+                writer.write_line(0, 'hello');
+                assert.equal(stream.data, 'hello\n');
+            });
+
+            it('can indent lines', function () {
+                writer.write_line(1, 'hello');
+                writer.write_line(2, 'hello');
+                assert.equal(stream.data, '  hello\n    hello\n');
+            });
+
+            it('prints ok lines as normal lines', function () {
+                writer.write_ok_line(0, 'hello');
+                assert.equal(stream.data, 'hello\n');
+            });
+
+            it('prints error lines as normal lines', function () {
+                writer.write_error_line(0, 'hello');
+                assert.equal(stream.data, 'hello\n');
+            });
+        });
+
+        describe('when colors are turned on', function () {
+            var stream, writer;
+            before_each(function () {
+                stream = {
+                    data: '',
+                    write: function (data) {
+                        this.data += data;
+                    }
+                };
+                writer = new IndentingLineWriter(stream, {color: true});
+            });
+
+            it('prints ok lines in green', function () {
+                writer.write_ok_line(0, 'hello');
+                assert.equal(stream.data, '\033[32;mhello\033[0;m\n');
+            });
+
+            it('prints error lines in red', function () {
+                writer.write_error_line(0, 'hello');
+                assert.equal(stream.data, '\033[31;mhello\033[0;m\n');
+            });
+        });
+    });
 });
