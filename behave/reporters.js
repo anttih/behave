@@ -29,8 +29,10 @@ DotsReporter.prototype = {
     }
 };
 
-var SpecReporter = exports.SpecReporter = function (writer) {
+var SpecReporter = exports.SpecReporter = function (writer, opts) {
     this.writer = writer;
+    opts = opts || {};
+    this.color = opts.color || false;
 
     this.written_context_names = [];
     this.ok_count = 0;
@@ -66,22 +68,25 @@ SpecReporter.prototype = {
     },
 
     summary: function () {
-        var total = this.ok_count + this.failure_count + this.error_count;
+        var that = this;
+        var counts = {
+            ok:       this.ok_count,
+            failures: this.failure_count,
+            errors:   this.error_count
+        };
+
         this.writer.write_line(0, '');
-
-        var summary = total + ' examples, '
-                    + this.failure_count + ' failures, '
-                    + this.error_count + ' errors';
-
-        if (this.ok_count !== total) {
-            this.writer.write_error_line(0, summary);
-        } else {
-            this.writer.write_ok_line(0, summary);
-        }
+        write_summary(
+            counts,
+            function (summary) {
+                that.writer.write_line(0, summary);
+            },
+            this.color
+        );
     },
 
     _write_test_name: function (level, name) {
-        this.writer.write_ok_line(level, name);
+        this.writer.write_line(level, colorize(name, {color: this.color, fg: 'green'}));
     },
 
     _write_context: function (context) {
@@ -110,31 +115,39 @@ SpecReporter.prototype = {
 
 };
 
-var IndentingLineWriter = exports.IndentingLineWriter = function (stream, opts) {
-    this.stream = stream;
-    opts = opts || {};
-
-    this.write_ok_line = this.write_line;
-    this.write_error_line = this.write_line;
-
-    if (opts.color) {
-        this.write_ok_line    = this._write_green_line;
-        this.write_error_line = this._write_red_line;
+function write_summary(counts, write, color) {
+    var total = counts.ok + counts.failures + counts.errors;
+    var summary = total           + ' examples, '
+                + counts.failures + ' failures, '
+                + counts.errors   + ' errors';
+    
+    if (counts.ok !== total) {
+        write(colorize(summary, {color: color, fg: 'red'}));
+    } else {
+        write(colorize(summary, {color: color, fg: 'green'}));
     }
+}
+
+function colorize(str, opts) {
+    var colors = {
+        green: 32,
+        red:   31,
+    };
+
+    if (! opts.color) {
+        return str;
+    }
+    return '\033[' + colors[opts.fg] + ';m' + str + '\033[0;m';
+}
+
+var IndentingLineWriter = exports.IndentingLineWriter = function (stream) {
+    this.stream = stream;
 };
 
 IndentingLineWriter.prototype = {
 
     write_line: function (level, str) {
         this.stream.write(this._indent(level) + str + '\n');
-    },
-
-    _write_green_line: function (level, str) {
-        this.write_line(level, '\033[32;m' + str + '\033[0;m');
-    },
-
-    _write_red_line: function (level, str) {
-        this.write_line(level, '\033[31;m' + str + '\033[0;m');
     },
 
     _indent: function (level) {

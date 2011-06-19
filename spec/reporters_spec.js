@@ -119,7 +119,7 @@ describe('Reporters', function () {
     describe('colors', function () {
         before_each(function () {
             stream = new_stream();
-            reporter = new Reporter(new IndentingLineWriter(stream, {color: true}));
+            reporter = new Reporter(new IndentingLineWriter(stream), {color: true});
         });
 
         it('prints summary with green when all pass', function () {
@@ -136,7 +136,7 @@ describe('Reporters', function () {
 
         it('prints passing tests with green', function () {
             reporter.ok(['Topic'], 'passing test');
-            assert.equal('\nTopic\n  \033[32;mpassing test\033[0;m\n', stream.data);
+            assert.equal(stream.data, '\nTopic\n  \033[32;mpassing test\033[0;m\n');
         });
     });
 
@@ -197,33 +197,6 @@ describe('Reporters', function () {
                 writer.write_line(1, 'hello');
                 writer.write_line(2, 'hello');
                 assert.equal(stream.data, '  hello\n    hello\n');
-            });
-
-            it('prints ok lines as normal lines', function () {
-                writer.write_ok_line(0, 'hello');
-                assert.equal(stream.data, 'hello\n');
-            });
-
-            it('prints error lines as normal lines', function () {
-                writer.write_error_line(0, 'hello');
-                assert.equal(stream.data, 'hello\n');
-            });
-        });
-
-        describe('when colors are turned on', function () {
-            before_each(function () {
-                stream = new_stream();
-                writer = new IndentingLineWriter(stream, {color: true});
-            });
-
-            it('prints ok lines in green', function () {
-                writer.write_ok_line(0, 'hello');
-                assert.equal(stream.data, '\033[32;mhello\033[0;m\n');
-            });
-
-            it('prints error lines in red', function () {
-                writer.write_error_line(0, 'hello');
-                assert.equal(stream.data, '\033[31;mhello\033[0;m\n');
             });
         });
     });

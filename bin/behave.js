@@ -9,8 +9,8 @@ var main = function (global) {
 	var collector = new Collector();
 
 	var runner = new Runner();
-	var writer = new reporters.IndentingLineWriter(process.stdout, {color: true});
-	var reporter = new reporters.SpecReporter(writer);
+	var writer = new reporters.IndentingLineWriter(process.stdout);
+	var reporter = new reporters.SpecReporter(writer, {color: true});
 
 	runner.on('ok',      reporter.ok.bind(reporter));
 	runner.on('failure', reporter.failure.bind(reporter));
