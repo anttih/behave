@@ -3,7 +3,7 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
 
-var CMD = "NODE_PATH=" + process.cwd() + " " + process.cwd() + '/bin/behave';
+var CMD = "NODE_PATH=" + process.cwd() + " " + process.cwd() + '/behave.js';
 
 vows.describe("Behave command").addBatch({
     'running without path ': {
