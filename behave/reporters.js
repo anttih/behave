@@ -132,12 +132,12 @@ SummaryReporter.prototype = {
 					+ this.error_count   + ' errors';
 		
 		if (this.ok_count !== total) {
-			_write_summary_line('red');
+			_write_summary_line_with_color('red');
 		} else {
-			_write_summary_line('green');
+			_write_summary_line_with_color('green');
 		}
 
-		function _write_summary_line(color) {
+		function _write_summary_line_with_color(color) {
 			that.stream.write('\n\n' + colorize(
 				summary, {color: that.color, fg: color}
 			) + '\n');
