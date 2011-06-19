@@ -5,13 +5,18 @@ var AssertionError = require('assert').AssertionError;
 
 describe('Reporters', function () {
     var stream, reporter;
-    before_each(function () {
-        stream = {
+
+    function new_stream() {
+        return {
             data: '',
             write: function (data) {
                 this.data += data;
             }
         };
+    }
+
+    before_each(function () {
+        stream = new_stream();
         reporter = new Reporter(new IndentingLineWriter(stream));
     });
 
@@ -111,14 +116,8 @@ describe('Reporters', function () {
     });
 
     describe('colors', function () {
-        var stream, reporter;
         before_each(function () {
-            stream = {
-                data: '',
-                write: function (data) {
-                    this.data += data;
-                }
-            };
+            stream = new_stream();
             reporter = new Reporter(new IndentingLineWriter(stream, {color: true}));
         });
 
@@ -141,15 +140,10 @@ describe('Reporters', function () {
     });
 
     describe('line writer', function () {
+        var writer;
         describe('with no colors', function () {
-            var stream, writer;
             before_each(function () {
-                stream = {
-                    data: '',
-                    write: function (data) {
-                        this.data += data;
-                    }
-                };
+                stream = new_stream();
                 writer = new IndentingLineWriter(stream);
             });
 
@@ -176,14 +170,8 @@ describe('Reporters', function () {
         });
 
         describe('when colors are turned on', function () {
-            var stream, writer;
             before_each(function () {
-                stream = {
-                    data: '',
-                    write: function (data) {
-                        this.data += data;
-                    }
-                };
+                stream = new_stream();
                 writer = new IndentingLineWriter(stream, {color: true});
             });
 
