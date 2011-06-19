@@ -1,5 +1,5 @@
-Behave.js - synchronous unit-testing for JavaScript
-===================================================
+Behave.js - real unit-testing for JavaScript
+============================================
 
 Goals:
 - Don't try to run tests asynchronously. Unit-tests don't need to run
@@ -11,3 +11,14 @@ Goals:
 - Be as much RSpec-like as possible
 
 Make it easy to test asynchronous JavaScript synchronously!
+
+What we have:
+- ability to run suites with nesting describes on node.js
+- before_each hook that runs before each test (can be nested)
+- "spec" style result reporter with color output
+
+Todo:
+- callback stubbing
+- mockery
+- "dots" reporter
+- test runner for the browser
