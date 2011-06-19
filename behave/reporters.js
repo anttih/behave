@@ -125,35 +125,25 @@ SummaryReporter.prototype = {
     },
 
     summary: function () {
-        var that = this;
-        var counts = {
-            ok:       this.ok_count,
-            failures: this.failure_count,
-            errors:   this.error_count
-        };
+		var total = this.ok_count + this.failure_count + this.error_count,
+			that = this,
+			summary = total              + ' examples, '
+					+ this.failure_count + ' failures, '
+					+ this.error_count   + ' errors';
+		
+		if (this.ok_count !== total) {
+			_write_summary_line('red');
+		} else {
+			_write_summary_line('green');
+		}
 
-        write_summary(
-            counts,
-            function (summary) {
-                that.stream.write('\n\n' + summary + '\n');
-            },
-            this.color
-        );
+		function _write_summary_line(color) {
+			that.stream.write('\n\n' + colorize(
+				summary, {color: that.color, fg: color}
+			) + '\n');
+		}
     }
 };
-
-function write_summary(counts, write, color) {
-    var total = counts.ok + counts.failures + counts.errors;
-    var summary = total           + ' examples, '
-                + counts.failures + ' failures, '
-                + counts.errors   + ' errors';
-    
-    if (counts.ok !== total) {
-        write(colorize(summary, {color: color, fg: 'red'}));
-    } else {
-        write(colorize(summary, {color: color, fg: 'green'}));
-    }
-}
 
 function colorize(str, opts) {
     var colors = {
