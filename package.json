@@ -7,4 +7,7 @@
     "author" : "Antti Holvikari <anttih@gmail.com>",
     "main" : "behave",
     "bin" : {"behave" : "./bin/behave.js"}
+    "dependencies" : {
+        "nomnom" : "0.5.0"
+    }
 }

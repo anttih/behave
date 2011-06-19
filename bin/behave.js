@@ -2,15 +2,28 @@
 
 var main = function (global) {
 	var fs = require('fs'),
+		nomnom = require('nomnom'),
 		Runner = require('behave/runner').Runner,
 		reporters = require('behave/reporters'),
 		Collector = require('behave/collectors').SugarCollector;
 
-	var collector = new Collector();
+	var options = nomnom.opts({
+		reporter: {
+			string: '-r REPORTER, --reporter=REPORTER',
+			help: 'Which test reporter to use',
+		}
+	});
+	var args = options.parseArgs();
 
+	if (args.reporter == 'd') {
+		var writer = new reporters.IndentingLineWriter(process.stdout);
+		var reporter = new reporters.SpecReporter(writer, {color: true});
+	} else {
+		var reporter = new reporters.DotsReporter(process.stdout, {color: true});
+	}
+
+	var collector = new Collector();
 	var runner = new Runner();
-	var writer = new reporters.IndentingLineWriter(process.stdout);
-	var reporter = new reporters.SpecReporter(writer, {color: true});
 
 	runner.on('ok',      reporter.ok.bind(reporter));
 	runner.on('failure', reporter.failure.bind(reporter));
@@ -28,7 +41,7 @@ var main = function (global) {
 
 	collector.start(global);
 
-	var dir = process.argv[2] || 'spec';
+	var dir = args._[0] || 'spec';
 
 	var files = fs.readdirSync(process.cwd() + '/' + dir);
 	files.forEach(function (file) {
