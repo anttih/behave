@@ -125,23 +125,23 @@ SummaryReporter.prototype = {
     },
 
     summary: function () {
-		var total = this.ok_count + this.failure_count + this.error_count,
-			that = this,
-			summary = total              + ' examples, '
-					+ this.failure_count + ' failures, '
-					+ this.error_count   + ' errors';
-		
-		if (this.ok_count !== total) {
-			_write_summary_line_with_color('red');
-		} else {
-			_write_summary_line_with_color('green');
-		}
+        var total = this.ok_count + this.failure_count + this.error_count,
+        that = this,
+        summary = total              + ' examples, '
+                + this.failure_count + ' failures, '
+                + this.error_count   + ' errors';
 
-		function _write_summary_line_with_color(color) {
-			that.stream.write('\n\n' + colorize(
-				summary, {color: that.color, fg: color}
-			) + '\n');
-		}
+        if (this.ok_count !== total) {
+            _write_summary_line_with_color('red');
+        } else {
+            _write_summary_line_with_color('green');
+        }
+
+        function _write_summary_line_with_color(color) {
+            that.stream.write('\n\n' + colorize(
+                summary, {color: that.color, fg: color}
+            ) + '\n');
+        }
     }
 };
 
