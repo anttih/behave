@@ -126,10 +126,10 @@ SummaryReporter.prototype = {
 
     summary: function () {
         var total = this.ok_count + this.failure_count + this.error_count,
-        that = this,
-        summary = total              + ' examples, '
-                + this.failure_count + ' failures, '
-                + this.error_count   + ' errors';
+            that = this,
+            summary = total              + ' examples, '
+                    + this.failure_count + ' failures, '
+                    + this.error_count   + ' errors';
 
         if (this.ok_count !== total) {
             _write_summary_line_with_color('red');
