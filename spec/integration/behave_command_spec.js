@@ -20,7 +20,7 @@ vows.describe("Behave command").addBatch({
             },
 
             "prints progress with dots and a summary": function (err, stdout, stderr) {
-                assert.equal(stdout, '.\n\033[32;m1 examples, 0 failures, 0 errors\033[0;m\n');
+                assert.equal(stdout, '.\n\n\033[32;m1 examples, 0 failures, 0 errors\033[0;m\n');
             }
         },
 
@@ -31,7 +31,7 @@ vows.describe("Behave command").addBatch({
             "prints topic, test name and summary": function (err, stdout, stderr) {
                 assert.equal(
                     stdout,
-                    '\nContext\n  \033[32;mtest name\033[0;m\n\n'
+                    '\nContext\n  \033[32;mtest name\033[0;m\n\n\n'
                     + '\033[32;m1 examples, 0 failures, 0 errors\033[0;m\n');
             }
         }

@@ -147,14 +147,14 @@ describe('Reporters', function () {
         it('has 1 example, 0 failures and 0 errors when one passing test', function () {
             reporter.ok(['Topic'], 'test name');
             reporter.summary();
-            assert.ok(/1 examples, 0 failures, 0 errors/.test(stream.data));
+            assert.equal(stream.data, "\n\n1 examples, 0 failures, 0 errors\n");
         });
 
         it('has 2 examples, 0 failures and 0 errors when two passing tests', function () {
             reporter.ok(['Topic'], 'test name');
             reporter.ok(['Topic'], 'test name');
             reporter.summary();
-            assert.ok(/2 examples, 0 failures, 0 errors/.test(stream.data));
+            assert.equal(stream.data, "\n\n2 examples, 0 failures, 0 errors\n");
         });
 
         it('has 1 examples, 1 failures and 0 errors when one failure', function () {

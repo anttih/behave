@@ -132,11 +132,10 @@ SummaryReporter.prototype = {
             errors:   this.error_count
         };
 
-        this.stream.write('\n');
         write_summary(
             counts,
             function (summary) {
-                that.stream.write(summary + '\n');
+                that.stream.write('\n\n' + summary + '\n');
             },
             this.color
         );
