@@ -145,14 +145,8 @@ SugarCollector.prototype = {
     }
 };
 
-var SpecReporter = exports.SpecReporter = function (stream, opts) {
-    this.stream = stream;
-    opts = opts || {};
-
-    if (opts.color) {
-        this._write_ok_line    = this._write_green_line;
-        this._write_error_line = this._write_red_line;
-    }
+var SpecReporter = exports.SpecReporter = function (writer) {
+    this.writer = writer;
 
     this.written_context_names = [];
     this.ok_count = 0;
@@ -173,9 +167,9 @@ SpecReporter.prototype = {
 
         this._write_context(context);
         this._write_test_name(level, name);
-        this._write_indented_line(level + 1, 'Failure: ' + e.message);
-        this._write_indented_line(level + 2, 'expected: ' + JSON.stringify(e.expected));
-        this._write_indented_line(level + 2, 'got:      ' + JSON.stringify(e.actual));
+        this.writer.write_line(level + 1, 'Failure: ' + e.message);
+        this.writer.write_line(level + 2, 'expected: ' + JSON.stringify(e.expected));
+        this.writer.write_line(level + 2, 'got:      ' + JSON.stringify(e.actual));
     },
 
     error: function (context, name, e) {
@@ -184,26 +178,26 @@ SpecReporter.prototype = {
 
         this._write_context(context);
         this._write_test_name(level, name);
-        this._write_indented_line(level, '  Error: ' + e.message);
+        this.writer.write_line(level, '  Error: ' + e.message);
     },
 
     summary: function () {
         var total = this.ok_count + this.failure_count + this.error_count;
-        this.stream.write('\n');
+        this.writer.write_line(0, '');
 
         var summary = total + ' examples, '
                     + this.failure_count + ' failures, '
                     + this.error_count + ' errors';
 
         if (this.ok_count !== total) {
-            this._write_error_line(0, summary);
+            this.writer.write_error_line(0, summary);
         } else {
-            this._write_ok_line(0, summary);
+            this.writer.write_ok_line(0, summary);
         }
     },
 
     _write_test_name: function (level, name) {
-        this._write_ok_line(level, name);
+        this.writer.write_ok_line(level, name);
     },
 
     _write_context: function (context) {
@@ -219,35 +213,44 @@ SpecReporter.prototype = {
         this.written_context_names = context;
     },
 
-    _write_indented_line: function (level, str) {
-        this.stream.write(this._indent(level) + str + '\n');
-    },
-
     _write_context_names: function (level, names) {
         var that = this;
         if (level === 0) {
-            this.stream.write('\n');
+            this.writer.write_line(0, '');
         }
         names.forEach(function (name) {
-            that._write_indented_line(level, name);
+            that.writer.write_line(level, name);
             level++;
         });
     },
 
+};
+
+var IndentingLineWriter = exports.IndentingLineWriter = function (stream, opts) {
+    this.stream = stream;
+    opts = opts || {};
+
+    this.write_ok_line = this.write_line;
+    this.write_error_line = this.write_line;
+
+    if (opts.color) {
+        this.write_ok_line    = this._write_green_line;
+        this.write_error_line = this._write_red_line;
+    }
+};
+
+IndentingLineWriter.prototype = {
+
+    write_line: function (level, str) {
+        this.stream.write(this._indent(level) + str + '\n');
+    },
+
     _write_green_line: function (level, str) {
-        this._write_indented_line(level, '\033[32;m' + str + '\033[0;m');
+        this.write_line(level, '\033[32;m' + str + '\033[0;m');
     },
 
     _write_red_line: function (level, str) {
-        this._write_indented_line(level, '\033[31;m' + str + '\033[0;m');
-    },
-
-    _write_ok_line: function (level, str) {
-        this._write_indented_line(level, str);
-    },
-
-    _write_error_line: function (level, str) {
-        this._write_indented_line(level, str);
+        this.write_line(level, '\033[31;m' + str + '\033[0;m');
     },
 
     _indent: function (level) {

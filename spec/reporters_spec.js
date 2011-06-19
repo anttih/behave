@@ -1,4 +1,5 @@
 var Reporter = require('behave').SpecReporter;
+var IndentingLineWriter = require('behave').IndentingLineWriter;
 var assert = require('assert');
 var AssertionError = require('assert').AssertionError;
 
@@ -11,7 +12,7 @@ describe('Reporters', function () {
                 this.data += data;
             }
         };
-        reporter = new Reporter(stream);
+        reporter = new Reporter(new IndentingLineWriter(stream));
     });
 
     describe('Passing tests', function () {
@@ -118,7 +119,7 @@ describe('Reporters', function () {
                     this.data += data;
                 }
             };
-            reporter = new Reporter(stream, {color: true});
+            reporter = new Reporter(new IndentingLineWriter(stream, {color: true}));
         });
 
         it('prints summary with green when all pass', function () {
