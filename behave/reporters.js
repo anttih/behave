@@ -1,9 +1,6 @@
 var DotsReporter = exports.DotsReporter = function (stream, opts) {
     this.stream = stream;
-
-    this.ok_count = 0;
-    this.failure_count = 0;
-    this.error_count = 0;
+    this.test_count = 0;
 
     opts = opts || {};
     this.color = opts.color || false;
@@ -11,44 +8,25 @@ var DotsReporter = exports.DotsReporter = function (stream, opts) {
 
 DotsReporter.prototype = {
     ok: function (context, name) {
-        this.ok_count++;
+        this.test_count++;
         this.stream.write('.');
         this._write_newline_if_80_tests();
     },
 
     failure: function (context, name, e) {
-        this.failure_count++;
+        this.test_count++;
         this.stream.write('F');
         this._write_newline_if_80_tests();
     },
 
     error: function (context, name, e) {
-        this.error_count++;
+        this.test_count++;
         this.stream.write('E');
         this._write_newline_if_80_tests();
     },
 
-    summary: function () {
-        var that = this;
-        var counts = {
-            ok:       this.ok_count,
-            failures: this.failure_count,
-            errors:   this.error_count
-        };
-
-        this.stream.write('\n');
-        write_summary(
-            counts,
-            function (summary) {
-                that.stream.write(summary + '\n');
-            },
-            this.color
-        );
-    },
-
     _write_newline_if_80_tests: function () {
-        var total = this.ok_count + this.failure_count + this.error_count;
-        if (total % 80 === 0) {
+        if (this.test_count % 80 === 0) {
             this.stream.write('\n');
         }
     }
@@ -60,21 +38,16 @@ var SpecReporter = exports.SpecReporter = function (writer, opts) {
     this.color = opts.color || false;
 
     this.written_context_names = [];
-    this.ok_count = 0;
-    this.failure_count = 0;
-    this.error_count = 0;
 };
 
 SpecReporter.prototype = {
     ok: function (context, name) {
-        this.ok_count++;
         this._write_context(context);
         this._write_test_name(context.length, name);
     },
 
     failure: function (context, name, e) {
         var level = context.length;
-        this.failure_count++;
 
         this._write_context(context);
         this._write_test_name(level, name);
@@ -85,29 +58,10 @@ SpecReporter.prototype = {
 
     error: function (context, name, e) {
         var level = context.length;
-        this.error_count++;
 
         this._write_context(context);
         this._write_test_name(level, name);
         this.writer.write_line(level, '  Error: ' + e.message);
-    },
-
-    summary: function () {
-        var that = this;
-        var counts = {
-            ok:       this.ok_count,
-            failures: this.failure_count,
-            errors:   this.error_count
-        };
-
-        this.writer.write_line(0, '');
-        write_summary(
-            counts,
-            function (summary) {
-                that.writer.write_line(0, summary);
-            },
-            this.color
-        );
     },
 
     _write_test_name: function (level, name) {
@@ -144,7 +98,49 @@ SpecReporter.prototype = {
             colorize(str, {color: this.color, fg: 'green'})
         );
     }
+};
 
+var SummaryReporter = exports.SummaryReporter = function (stream, opts) {
+    this.stream = stream;
+
+    this.ok_count = 0;
+    this.failure_count = 0;
+    this.error_count = 0;
+
+    opts = opts || {};
+    this.color = opts.color || false;
+};
+
+SummaryReporter.prototype = {
+    ok: function (context, name) {
+        this.ok_count++;
+    },
+
+    failure: function (context, name, e) {
+        this.failure_count++;
+    },
+
+    error: function (context, name, e) {
+        this.error_count++;
+    },
+
+    summary: function () {
+        var that = this;
+        var counts = {
+            ok:       this.ok_count,
+            failures: this.failure_count,
+            errors:   this.error_count
+        };
+
+        this.stream.write('\n');
+        write_summary(
+            counts,
+            function (summary) {
+                that.stream.write(summary + '\n');
+            },
+            this.color
+        );
+    }
 };
 
 function write_summary(counts, write, color) {

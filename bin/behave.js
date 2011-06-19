@@ -16,6 +16,12 @@ var main = function (global) {
 	runner.on('failure', reporter.failure.bind(reporter));
 	runner.on('error',   reporter.error.bind(reporter));
 
+    var summary = new reporters.SummaryReporter(process.stdout, {color: true});
+
+	runner.on('ok',      summary.ok.bind(summary));
+	runner.on('failure', summary.failure.bind(summary));
+	runner.on('error',   summary.error.bind(summary));
+
 	collector.suite(function (suite) {
 		runner.run(suite);
 	});
@@ -31,7 +37,8 @@ var main = function (global) {
 			require(path);
 		}
 	});
-	reporter.summary();
+
+	summary.summary();
 
 	collector.stop();
 };
