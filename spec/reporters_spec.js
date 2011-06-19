@@ -82,6 +82,7 @@ describe('Reporters', function () {
         });
     });
 
+    function summary_specs () {
     describe('summary', function () {
         it('has 1 example, 0 failures and 0 errors when one passing test', function () {
             reporter.ok(['Topic'], 'test name');
@@ -115,6 +116,8 @@ describe('Reporters', function () {
             assert.ok(/3 examples, 1 failures, 1 errors/.test(stream.data));
         });
     });
+    }
+    summary_specs();
 
     describe('colors', function () {
         before_each(function () {
@@ -178,6 +181,7 @@ describe('Reporters', function () {
             reporter.error(['Topic'], 'test name', new Error());
             assert.equal(stream.data, 'E');
         });
+        summary_specs();
     });
 
     describe('line writer', function () {

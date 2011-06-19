@@ -1,29 +1,54 @@
-var DotsReporter = exports.DotsReporter = function (stream) {
+var DotsReporter = exports.DotsReporter = function (stream, opts) {
     this.stream = stream;
-    this.total = 0;
+
+    this.ok_count = 0;
+    this.failure_count = 0;
+    this.error_count = 0;
+
+    opts = opts || {};
+    this.color = opts.color || false;
 };
 
 DotsReporter.prototype = {
     ok: function (context, name) {
-        this.total++;
+        this.ok_count++;
         this.stream.write('.');
         this._write_newline_if_80_tests();
     },
 
     failure: function (context, name, e) {
-        this.total++;
+        this.failure_count++;
         this.stream.write('F');
         this._write_newline_if_80_tests();
     },
 
     error: function (context, name, e) {
-        this.total++;
+        this.error_count++;
         this.stream.write('E');
         this._write_newline_if_80_tests();
     },
 
+    summary: function () {
+        var that = this;
+        var counts = {
+            ok:       this.ok_count,
+            failures: this.failure_count,
+            errors:   this.error_count
+        };
+
+        this.stream.write('\n');
+        write_summary(
+            counts,
+            function (summary) {
+                that.stream.write(summary + '\n');
+            },
+            this.color
+        );
+    },
+
     _write_newline_if_80_tests: function () {
-        if (this.total % 80 === 0) {
+        var total = this.ok_count + this.failure_count + this.error_count;
+        if (total % 80 === 0) {
             this.stream.write('\n');
         }
     }
