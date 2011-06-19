@@ -1,5 +1,4 @@
-var Collector = require('behave').SugarCollector;
-var vows = require('vows');
+var Collector = require('behave/collectors').SugarCollector;
 var assert = require('assert');
 
 describe("Collecting tests", function () {

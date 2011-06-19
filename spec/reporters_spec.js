@@ -1,5 +1,5 @@
-var Reporter = require('behave').SpecReporter;
-var IndentingLineWriter = require('behave').IndentingLineWriter;
+var Reporter = require('behave/reporters').SpecReporter;
+var IndentingLineWriter = require('behave/reporters').IndentingLineWriter;
 var assert = require('assert');
 var AssertionError = require('assert').AssertionError;
 

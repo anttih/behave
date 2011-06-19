@@ -1,5 +1,5 @@
 var assert = require('assert');
-var Runner = require('behave').Runner;
+var Runner = require('behave/runner').Runner;
 
 var run_suite = function (suite, name) {
     var runner = new Runner();
