@@ -1,3 +1,33 @@
+var DotsReporter = exports.DotsReporter = function (stream) {
+    this.stream = stream;
+    this.total = 0;
+};
+
+DotsReporter.prototype = {
+    ok: function (context, name) {
+        this.total++;
+        this.stream.write('.');
+        this._write_newline_if_80_tests();
+    },
+
+    failure: function (context, name, e) {
+        this.total++;
+        this.stream.write('F');
+        this._write_newline_if_80_tests();
+    },
+
+    error: function (context, name, e) {
+        this.total++;
+        this.stream.write('E');
+        this._write_newline_if_80_tests();
+    },
+
+    _write_newline_if_80_tests: function () {
+        if (this.total % 80 === 0) {
+            this.stream.write('\n');
+        }
+    }
+};
 
 var SpecReporter = exports.SpecReporter = function (writer) {
     this.writer = writer;

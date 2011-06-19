@@ -1,4 +1,5 @@
 var Reporter = require('behave/reporters').SpecReporter;
+var DotsReporter = require('behave/reporters').DotsReporter;
 var IndentingLineWriter = require('behave/reporters').IndentingLineWriter;
 var assert = require('assert');
 var AssertionError = require('assert').AssertionError;
@@ -136,6 +137,46 @@ describe('Reporters', function () {
         it('prints passing tests with green', function () {
             reporter.ok(['Topic'], 'passing test');
             assert.equal('\nTopic\n  \033[32;mpassing test\033[0;m\n', stream.data);
+        });
+    });
+
+    describe('dots reporter', function () {
+        before_each(function () {
+            stream = new_stream();
+            reporter = new DotsReporter(stream);
+        });
+
+        it('prints a dot for a passing test', function () {
+            reporter.ok(['Topic'], 'test name');
+            assert.equal(stream.data, '.');
+        });
+
+        it('prints a newline after the 80th test', function () {
+            var count = 82;
+            while(count--) {
+                reporter.ok(['Topic'], 'test');
+            }
+            assert.ok(/^\.{80}\n\.{2}/.test(stream.data));
+        });
+
+        it('prints a newline after the 80th test including failures and errors', function () {
+            var count = 80;
+            reporter.failure(['topic'], 'failure', {});
+            reporter.error(['topic'], 'error', {});
+            while(count--) {
+                reporter.ok(['Topic'], 'test');
+            }
+            assert.ok(/^FE\.{78}\n\.{2}/.test(stream.data));
+        });
+
+        it('prints the letter F for a failing test', function () {
+            reporter.failure(['Topic'], 'test name', new AssertionError({message: 'msg'}));
+            assert.equal(stream.data, 'F');
+        });
+
+        it('prints the letter E for an erroring test', function () {
+            reporter.error(['Topic'], 'test name', new Error());
+            assert.equal(stream.data, 'E');
         });
     });
 
