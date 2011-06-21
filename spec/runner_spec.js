@@ -264,4 +264,36 @@ describe("Running a suite", function () {
             assert.equal(this.hook, 'first second');
         });
     });
+
+    describe('callbacks', function () {
+        it('passes before_each callback param to its in the same context', function () {
+            var first;
+            run_suite({
+                'context': {
+                    before_each: function () { this.callback('first param'); },
+                    'first': function (param) {
+                        first = param;
+                    }
+                }
+            });
+            assert.equal(first, 'first param');
+        });
+
+        it('passes before_each params from nested contexts to each child test', function () {
+            var args;
+            run_suite({
+                'context': {
+                    before_each: function () { this.callback('first', 'second'); },
+                    'first test': function () {},
+                    'context 2': {
+                        before_each: function () { this.callback('third', 'fourth'); },
+                        'second test': function (third_arg, fourth_arg, first_arg, second_arg) {
+                            args = Array.prototype.slice.apply(arguments);
+                        },
+                    }
+                }
+            });
+            assert.deepEqual(args, ['third', 'fourth', 'first', 'second']);
+        });
+    });
 });

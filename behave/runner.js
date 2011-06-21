@@ -81,10 +81,17 @@ TestContext.prototype = {
     },
 
     run_test: function (test) {
-        var i, that = {};
+        var args = [],
+            i,
+            that = {
+                callback: function () {
+                    args = Array.prototype.slice.apply(arguments).concat(args);
+                }
+            };
+
         for (i = 0; i < this.before_each.length; i++) {
             this.before_each[i].apply(that);
         }
-        test.apply(that);
+        test.apply(that, args);
     }
 };
