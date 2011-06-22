@@ -3,9 +3,9 @@
 var main = function (global) {
 	var fs = require('fs'),
 		nomnom = require('nomnom'),
-		Runner = require('behave/runner').Runner,
-		reporters = require('behave/reporters'),
-		Collector = require('behave/collectors').SugarCollector;
+		Runner = require('../behave/runner').Runner,
+		reporters = require('../behave/reporters'),
+		Collector = require('../behave/collectors').SugarCollector;
 
 	var options = nomnom.opts({
 		reporter: {
